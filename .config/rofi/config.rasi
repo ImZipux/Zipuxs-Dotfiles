@@ -1,0 +1,49 @@
+configuration {
+ modi: "window,run,drun";
+ kb-cancel: "Escape,Alt+F1";
+ drun-display-format: "{icon} {name}";
+ show-icons: true;
+ icon-theme: "Papirus Dark";
+ font: "OpenDyslexic Nerd Font 12";
+ }
+ 
+ @theme "/dev/null"
+ 
+ * {
+    background-color: #c0c0c000;
+    text-color: #000000;
+  }
+  mainbox {
+    border: 1;
+    border-radius: 20px 20px 20px 20px;
+    border-color: #000000;
+    background-color: #c0c0c0;
+  }
+  inputbar {
+    children: [textbox-prompt-colon,entry,case-indicator];
+    border: 1;
+    border-radius: 20px 20px 0 0;
+    border-color: #000000;
+  }
+  element-text {
+    background-color: inherit;
+    text-color: inherit;
+  }
+  element selected {
+    border: 1;
+    border-color: #000000;
+    background-color: #000000;
+    text-color: #ffffff;
+  }
+  window {
+    border: 1;
+    border-radius: 20px 20px 20px 20px;
+    border-color: #ffffff;
+    transparency: "screenshot";
+  }
+  textbox-prompt-colon {
+    expand: false;
+    str: " Run:";
+    margin: 0px 0.1em 0em 0em;
+    text-color: #000000;
+  }
