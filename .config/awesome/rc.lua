@@ -99,20 +99,20 @@ modkey = "Mod4"
 awful.layout.layouts = {
     awful.layout.suit.floating,
     awful.layout.suit.tile,
-    --awful.layout.suit.tile.left,
-    --awful.layout.suit.tile.bottom,
-    --awful.layout.suit.tile.top,
-    --awful.layout.suit.fair,
-    --awful.layout.suit.fair.horizontal,
-    --awful.layout.suit.spiral,
-    --awful.layout.suit.spiral.dwindle,
-    --awful.layout.suit.max,
-    --awful.layout.suit.max.fullscreen,
-    --awful.layout.suit.magnifier,
-    --awful.layout.suit.corner.nw,
-    --awful.layout.suit.corner.ne,
-    --awful.layout.suit.corner.sw,
-    --awful.layout.suit.corner.se,
+    awful.layout.suit.tile.left,
+    awful.layout.suit.tile.bottom,
+    awful.layout.suit.tile.top,
+    awful.layout.suit.fair,
+    awful.layout.suit.fair.horizontal,
+    awful.layout.suit.spiral,
+    awful.layout.suit.spiral.dwindle,
+    awful.layout.suit.max,
+    awful.layout.suit.max.fullscreen,
+    awful.layout.suit.magnifier,
+    awful.layout.suit.corner.nw,
+    awful.layout.suit.corner.ne,
+    awful.layout.suit.corner.sw,
+    awful.layout.suit.corner.se,
 }
 -- }}}
 
@@ -163,7 +163,7 @@ month_calendar:attach( mytextclock, "tc" )
 
 -- Debian Widget
 myDebian = wibox.widget {
-	    text = "  | ",
+	    text = " ",
 	    widget = wibox.widget.textbox
 	}
 
@@ -175,7 +175,7 @@ myDebian = wibox.widget {
 	
 -- Power Menu Widget
 myPower = wibox.widget {
-	    text = "|  ",
+	    text = " ",
 	    widget = wibox.widget.textbox
 	}
 
@@ -360,7 +360,9 @@ awful.screen.connect_for_each_screen(function(s)
             {wibox.widget.textbox(' '), bg = '#c0c0c0', widget = wibox.container.background},
             {awful.widget.watch({"bash", "-c", "free -m | grep \"Mem:\" | awk '{printf \" %d%\", $3/$2*100}'"}, 1), bg = '#c0c0c0', widget = wibox.container.background},
             {wibox.widget.textbox(' '), bg = '#c0c0c0', widget = wibox.container.background},
-            {awful.widget.watch({"bash", "-c", "df -H /dev/sda2 | grep \"/dev/sda2\" | awk '{printf \" %d% \", $5}'"}, 1), bg = '#c0c0c0', widget = wibox.container.background, shape = rc, shape_clip = true},
+            {awful.widget.watch({"bash", "-c", "df -H /dev/sda2 | grep \"/dev/sda2\" | awk '{printf \" %d% \", $5}'"}, 1), bg = '#c0c0c0', widget = wibox.container.background},
+            {wibox.widget.textbox(' | '), bg = '#c0c0c0', widget = wibox.container.background},
+            {s.mylayoutbox, bg = '#c0c0c0', widget = wibox.container.background, shape = rc, shape_clip = true},
         },
     },
         --bottom = 0, -- don't forget to increase wibar height
