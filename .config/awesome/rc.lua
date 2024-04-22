@@ -226,7 +226,7 @@ myYouTube = awful.widget.watch({"bash", "-c", "/usr/bin/python3 ~/.config/awesom
 
 	myYouTube:connect_signal("button::press",
 	    function()
-		awful.spawn("firefox-esr -new-tab https://studio.youtube.com/channel/YOUR CHANNELID HERE")
+		awful.spawn("firefox-esr -new-tab https://www.youtube.com/@ImZipux")
 	    end
 	)
 
