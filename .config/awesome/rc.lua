@@ -255,6 +255,9 @@ local myUpdates_tooltip = awful.tooltip
     end,
 }
 
+-- Internet Speed Widget
+myNet = awful.widget.watch({"bash", "-c", "ifstat -i enp11s0 1s 1 | tail -n 1 | awk '{if ($1 < 1 && $2 < 1) {printf \" %.0fB  %.0fB \", $1*1000, $2*1000} else if ($1 >= 1000 || $2 >= 1000) {printf \" %.2fMB  %.2fMB \", $1/1000, $2/1000} else if ($1 >= 1000000 || $2 >= 1000000) {printf \" %.2fGB  %.2fGB \", $1/1000000, $2/1000000} else {printf \" %.2fKB  %.2fKB \", $1, $2}}'"}, 1)
+
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
                     awful.button({ }, 1, function(t) t:view_only() end),
@@ -315,7 +318,7 @@ awful.screen.connect_for_each_screen(function(s)
     set_wallpaper(s)
 
     -- Each screen has its own tag table.
-    awful.tag({ "", "", "", "", "", "󰽰", "", "", "", "", "" }, s, awful.layout.layouts[9])
+    awful.tag({ "", "", "", "", "󰽰", "", "", "", "" }, s, awful.layout.layouts[9])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -407,7 +410,7 @@ awful.screen.connect_for_each_screen(function(s)
             {wibox.widget.textbox(' '), bg = widgetbg, widget = wibox.container.background},
             {awful.widget.watch({"bash", "-c", "df -H /dev/sda2 | grep \"/dev/sda2\" | awk '{printf \" %d%\", $5}'"}, 1), bg = widgetbg, widget = wibox.container.background},
             {wibox.widget.textbox(' '), bg = widgetbg, widget = wibox.container.background},
-            {awful.widget.watch({"bash", "-c", "ifstat -i enp11s0 1s 1 | awk 'NR==3 {print \" \" $1\"KB \" \" \" $2\"KB \"}'"}, 1), bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
+            {myNet, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
         },
     },
         --bottom = 0, -- don't forget to increase wibar height
@@ -815,4 +818,4 @@ awful.spawn.once("pactl set-sink-volume @DEFAULT_SINK@ 100%")
 
 awful.spawn.once("nm-applet")
 awful.spawn.once("firefox-esr")
---awful.spawn.once("discord")
+awful.spawn.once("discord")
