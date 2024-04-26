@@ -157,17 +157,17 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Wibar
 -- Create a textclock widget
-mytextclock = wibox.widget.textclock("%l:%M:%S %p | %a, %b %e, %Y ", 1, "America/New_York")
+mytextclock = wibox.widget.textclock(" %l:%M:%S %p |  %a, %b %e, %Y", 1, "America/New_York")
 month_calendar = awful.widget.calendar_popup.month({start_sunday = true, bg = '#c0c0c0'})
 month_calendar:attach( mytextclock, "tc" )
 
 -- Debian Widget
-myDebian = wibox.widget {
-	    text = " ",
-	    widget = wibox.widget.textbox
+myLogo = wibox.widget {
+	    image = ".config/awesome/default/button.png",
+	    widget = wibox.widget.imagebox
 	}
 
-	myDebian:connect_signal("button::press",
+	myLogo:connect_signal("button::release",
 	    function()
 		awful.spawn("rofi -show drun")
 	    end
@@ -179,56 +179,81 @@ myPower = wibox.widget {
 	    widget = wibox.widget.textbox
 	}
 
-	myPower:connect_signal("button::press",
+	myPower:connect_signal("button::release",
 	    function()
 		awful.spawn("rofi -show power-menu -modi power-menu:rofi-power-menu")
 	    end
 	)
 	
 --Weather Widget
-myWeather = awful.widget.watch('curl wttr.in/?format=%c%t', 600)
+myWeather = awful.widget.watch("curl wttr.in/?format=%c%t", 600)
 
-	myWeather:connect_signal("button::press",
+	myWeather:connect_signal("button::release",
 	    function()
 		awful.spawn("firefox-esr -new-tab https://www.weather.com/")
 	    end
 	)
 	
 -- Volume Widget
-myVolume = awful.widget.watch({"bash", "-c", "pamixer --get-volume | awk '{printf \"%d%\", $1}'"}, 1)
-
-	myVolume:connect_signal("button::release",
-		function(c, _, _, button)
-		if button == 4 then
-		    awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ +1%")
-		elseif button == 5 then
-		    awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ -1%")
-		end
-	end)
-
-myMute = wibox.widget {
-    text   = "󰕾",
+myVolume = wibox.widget {
+    text   = "󰕾 ",
     widget = wibox.widget.textbox,
 }
+
+local myVolume_tooltip = awful.tooltip
+{
+    objects        = { myVolume },
+    timer_function = function()
+        return io.popen("pamixer --get-volume | awk '{printf \"%d%\", $1}'"):read("*a")
+    end,
+}
         
-    myMute:connect_signal("button::release", function(c, _, _, b)
-        if c.text == "󰕾" then
-            awful.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle")
-            c.text = "󰝟"
-        elseif c.text == "󰝟" then
-            awful.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle")
-            c.text = "󰕾"
+    myVolume:connect_signal("button::release", function(c, _, _, button)
+        if button == 1 and c.text == "󰕾 " then
+            awful.spawn.easy_async_with_shell("pactl set-sink-mute @DEFAULT_SINK@ toggle")
+            c.text = "󰝟 "
+        elseif button == 1 and c.text == "󰝟 " then
+            awful.spawn.easy_async_with_shell("pactl set-sink-mute @DEFAULT_SINK@ toggle")
+            c.text = "󰕾 "
+        elseif button == 4 then
+            awful.spawn.easy_async_with_shell("pactl set-sink-volume @DEFAULT_SINK@ +1%")
+        elseif button == 5 then
+            awful.spawn.easy_async_with_shell("pactl set-sink-volume @DEFAULT_SINK@ -1%")
         end
     end)
 
 -- YouTube Widget
 myYouTube = awful.widget.watch({"bash", "-c", "/usr/bin/python3 ~/.config/awesome/subscribers.py | awk '{printf \"  %d\", $1}'"}, 600)
 
-	myYouTube:connect_signal("button::press",
+	myYouTube:connect_signal("button::release",
 	    function()
-		awful.spawn("firefox-esr -new-tab https://www.youtube.com/@ImZipux")
+		awful.spawn("firefox-esr -new-tab https://studio.youtube.com/")
 	    end
 	)
+
+-- System Updates Widget
+myUpdates = wibox.widget {
+    text   = "",
+    widget = wibox.widget.textbox,
+}
+
+myUpdates:connect_signal("button::release", function(c, _, _, button)
+    if button == 1 then
+        awful.spawn.easy_async_with_shell("pkexec nala update")
+    elseif button == 2 then
+        awful.spawn.easy_async_with_shell("kitty --hold apt list --upgradable")
+    elseif button == 3 then
+        awful.spawn.easy_async_with_shell("kitty --hold sudo nala upgrade")
+    end
+end)
+
+local myUpdates_tooltip = awful.tooltip
+{
+    objects        = { myUpdates },
+    timer_function = function()
+        return io.popen("apt list --upgradable | wc -l | awk '{printf \"%d Update(s) Available\", $1-1}'"):read("*a")
+    end,
+}
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
@@ -290,7 +315,7 @@ awful.screen.connect_for_each_screen(function(s)
     set_wallpaper(s)
 
     -- Each screen has its own tag table.
-    awful.tag({ "", "", "", "", "", "󰽰", "", "", "", "", "" }, s, awful.layout.layouts[2])
+    awful.tag({ "", "", "", "", "", "󰽰", "", "", "", "", "" }, s, awful.layout.layouts[9])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -302,11 +327,30 @@ awful.screen.connect_for_each_screen(function(s)
                            awful.button({ }, 3, function () awful.layout.inc(-1) end),
                            awful.button({ }, 4, function () awful.layout.inc( 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(-1) end)))
+    
+    -- Make sure you remove the default Mod4+Space and Mod4+Shift+Space
+    -- keybindings before adding this.
+    awful.keygrabber {
+        start_callback = function() layout_popup.visible = true  end,
+        stop_callback  = function() layout_popup.visible = false end,
+        export_keybindings = true,
+        release_event = 'release',
+        stop_key = {'Escape', 'Super_L', 'Super_R'},
+        keybindings = {
+            {{ modkey          } , ' ' , function()
+                awful.layout.set(gears.table.iterate_value(ll.layouts, ll.current_layout, 1))
+            end},
+            {{ modkey, 'Shift' } , ' ' , function()
+                awful.layout.set(gears.table.iterate_value(ll.layouts, ll.current_layout, -1), nil)
+            end},
+        }
+    }
+
     -- Create a taglist widget
     s.mytaglist = awful.widget.taglist {
         screen  = s,
         filter  = awful.widget.taglist.filter.all,
-        buttons = taglist_buttons
+        buttons = taglist_buttons,
     }
 
     -- Create a tasklist widget
@@ -319,8 +363,6 @@ awful.screen.connect_for_each_screen(function(s)
         	tasklist_disable_icon = true,
         }
     }
-    beautiful.tasklist_bg_focus = "#c0c0c0"
-    beautiful.tasklist_fg_focus = "#000000"
 
     -- Create the wibox
     lc = function(cr,w,h) gears.shape.partially_rounded_rect(cr, w, h, true, false, false, true, 20) end
@@ -329,6 +371,8 @@ awful.screen.connect_for_each_screen(function(s)
     
     s.mywibox = awful.wibar({ position = "top", screen = s, width = 1920, height = 40, ontop = false })
 
+    widgetbg = "#c0c0c0"
+
     -- Add widgets to the wibox
     s.mywibox:setup {
     {
@@ -336,33 +380,34 @@ awful.screen.connect_for_each_screen(function(s)
         expand = "none",
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
-            {myDebian, bg = '#c0c0c0', widget = wibox.container.background, shape = lc, shape_clip = true},
-            {s.mytaglist, bg = '#c0c0c0', widget = wibox.container.background},
-            {myPower, bg = '#c0c0c0', widget = wibox.container.background, shape = rc, shape_clip = true},
+            {myLogo, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
+            {s.mytaglist, bg = widgetbg, widget = wibox.container.background},
+            {s.mylayoutbox, bg = widgetbg, widget = wibox.container.background},
+            {myPower, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
+            --{wibox.widget.textbox(' | '), bg = widgetbg, widget = wibox.container.background},
+            --{awful.widget.watch({"bash", "-c", "uptime -p | tr \",\", \"\n\" | awk '{print \"󰚰\", $2, toupper(substr($3, 1, 1)) substr($3, 2)\" \"}'"}, 60), bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
         },
-        { -- Middle widget
+        { -- Middle widgets
             layout = wibox.layout.fixed.horizontal,
-            {myYouTube, bg = '#c0c0c0', widget = wibox.container.background, shape = lc, shape_clip = true},
-            {wibox.widget.textbox(' | '), bg = '#c0c0c0', widget = wibox.container.background},
-            {myWeather, bg = '#c0c0c0', widget = wibox.container.background},
-	        {wibox.widget.textbox(' | '), bg = '#c0c0c0', widget = wibox.container.background},
-	        {mytextclock, bg = '#c0c0c0', widget = wibox.container.background, shape = rc, shape_clip = true},
+            {myYouTube, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
+            {wibox.widget.textbox(' | '), bg = widgetbg, widget = wibox.container.background},
+            {myWeather, bg = widgetbg, widget = wibox.container.background},
+	        {wibox.widget.textbox(' | '), bg = widgetbg, widget = wibox.container.background},
+	        {mytextclock, bg = widgetbg, widget = wibox.container.background},
+            {wibox.widget.textbox(' | '), bg = widgetbg, widget = wibox.container.background},
+            {myUpdates, bg = widgetbg, widget = wibox.container.background},
+            {wibox.widget.systray(), bg = widgetbg, widget = wibox.container.background},
+            {myVolume, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
 	    },
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-            {awful.widget.watch({"bash", "-c", "apt list --upgradable | wc -l | awk '{printf \" 󰚰 %d\", $1-1}'"}, 1), bg = '#c0c0c0', widget = wibox.container.background, shape = lc, shape_clip = true},
-            {wibox.widget.textbox(' | '), bg = '#c0c0c0', widget = wibox.container.background},
-            {wibox.widget.systray(), bg = '#c0c0c0', widget = wibox.container.background},
-            {myMute, bg = '#c0c0c0', widget = wibox.container.background},
-            {myVolume, bg = '#c0c0c0', widget = wibox.container.background},
-            {wibox.widget.textbox(' | '), bg = '#c0c0c0', widget = wibox.container.background},
-            {awful.widget.watch({"bash", "-c", "vmstat 1 2 | tail -1 | awk '{printf \" %d%\", 100-$15}'"}, 1), bg = '#c0c0c0', widget = wibox.container.background},
-            {wibox.widget.textbox(' '), bg = '#c0c0c0', widget = wibox.container.background},
-            {awful.widget.watch({"bash", "-c", "free -m | grep \"Mem:\" | awk '{printf \" %d%\", $3/$2*100}'"}, 1), bg = '#c0c0c0', widget = wibox.container.background},
-            {wibox.widget.textbox(' '), bg = '#c0c0c0', widget = wibox.container.background},
-            {awful.widget.watch({"bash", "-c", "df -H /dev/sda2 | grep \"/dev/sda2\" | awk '{printf \" %d% \", $5}'"}, 1), bg = '#c0c0c0', widget = wibox.container.background},
-            {wibox.widget.textbox(' | '), bg = '#c0c0c0', widget = wibox.container.background},
-            {s.mylayoutbox, bg = '#c0c0c0', widget = wibox.container.background, shape = rc, shape_clip = true},
+            {awful.widget.watch({"bash", "-c", "vmstat 1 2 | tail -1 | awk '{printf \"  %d%\", 100-$15}'"}, 1), bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
+            {wibox.widget.textbox(' '), bg = widgetbg, widget = wibox.container.background},
+            {awful.widget.watch({"bash", "-c", "free -m | grep \"Mem:\" | awk '{printf \" %d%\", $3/$2*100}'"}, 1), bg = widgetbg, widget = wibox.container.background},
+            {wibox.widget.textbox(' '), bg = widgetbg, widget = wibox.container.background},
+            {awful.widget.watch({"bash", "-c", "df -H /dev/sda2 | grep \"/dev/sda2\" | awk '{printf \" %d%\", $5}'"}, 1), bg = widgetbg, widget = wibox.container.background},
+            {wibox.widget.textbox(' '), bg = widgetbg, widget = wibox.container.background},
+            {awful.widget.watch({"bash", "-c", "ifstat -i enp11s0 1s 1 | awk 'NR==3 {print \" \" $1\"KB \" \" \" $2\"KB \"}'"}, 1), bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
         },
     },
         --bottom = 0, -- don't forget to increase wibar height
@@ -760,12 +805,14 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- }}}
 
 --Autostart Applications
-awful.spawn.with_shell("firefox-esr", {tag = ""})
-awful.spawn.with_shell("discord", {tag = ""})
-awful.spawn.with_shell("nm-applet")
+awful.spawn.once("xset -dpms")
+awful.spawn.once("xset s off")
+awful.spawn.once("xset s noblank")
 
-awful.spawn.with_shell("xset -dpms")
-awful.spawn.with_shell("xset s off")
-awful.spawn.with_shell("xset s noblank")
+awful.spawn.once("exec /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1")
 
-awful.spawn.with_shell("pactl set-sink-volume @DEFAULT_SINK@ 100%")
+awful.spawn.once("pactl set-sink-volume @DEFAULT_SINK@ 100%")
+
+awful.spawn.once("nm-applet")
+awful.spawn.once("firefox-esr")
+--awful.spawn.once("discord")
