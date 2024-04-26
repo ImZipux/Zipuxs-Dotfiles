@@ -37,6 +37,23 @@ theme.border_focus  = "#ffffff"
 theme.border_marked = "#91231c"
 theme.border_color  = "#ffffff"
 
+theme.tasklist_bg_focus = "#c0c0c0"
+theme.tasklist_fg_focus = "#000000"
+
+theme.taglist_shape = gears.shape.rounded_rect
+theme.taglist_shape_focus = gears.shape.rounded_rect
+theme.taglist_shape_border_width = 1
+theme.taglist_shape_border_color = "#ffffff"
+theme.taglist_shape_border_width_empty = 0
+theme.taglist_shape_border_color_empty = "#000000"
+theme.taglist_shape_border_width_focus = 1
+theme.taglist_shape_border_color_focus = "#000000"
+theme.taglist_shape_border_width_urgent = 1
+theme.taglist_shape_border_color_urgent = "#000000"
+
+theme.tooltip_bg = "#000000"
+theme.tooltip_fg = "#ffffff"
+
 -- There are other variable sets
 -- overriding the default one when
 -- defined, the sets are:
