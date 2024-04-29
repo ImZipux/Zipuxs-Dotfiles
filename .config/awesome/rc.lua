@@ -403,7 +403,7 @@ awful.screen.connect_for_each_screen(function(s)
     -- Create a taglist widget
     s.mytaglist = awful.widget.taglist {
         screen  = s,
-        filter  = awful.widget.taglist.filter.noempty,
+        filter  = awful.widget.taglist.filter.all,
         buttons = taglist_buttons,
     }
     
@@ -454,6 +454,7 @@ awful.screen.connect_for_each_screen(function(s)
             {{myLogo, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
             {{s.mytaglist, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             --{{s.mylayoutbox, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            --{{s.mytasklist, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{myPower, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
 	    },
         { -- Right widgets
