@@ -17,21 +17,21 @@ theme.client_shape_rounded = function(cr,w,h)
     gears.shape.rounded_rect(cr,w,h,20)
 end
 
-theme.font          = "OpenDyslexic Nerd Font 14"
+theme.font          = "OpenDyslexic Nerd Font 12"
 
 theme.bg_normal     = "#c0c0c000"
-theme.bg_focus      = "#000000"
+theme.bg_focus      = "#c0c0c0"
 theme.bg_urgent     = "#ff0000"
 theme.bg_minimize   = "#444444"
 theme.bg_systray    = "#c0c0c000"
 
 theme.fg_normal     = "#000000"
-theme.fg_focus      = "#ffffff"
+theme.fg_focus      = "#000000"
 theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#000000"
 
 theme.useless_gap   = dpi(5)
-theme.border_width  = dpi(1)
+theme.border_width  = dpi(2)
 theme.border_normal = "#000000"
 theme.border_focus  = "#ffffff"
 theme.border_marked = "#91231c"
@@ -40,16 +40,16 @@ theme.border_color  = "#ffffff"
 theme.tasklist_bg_focus = "#c0c0c0"
 theme.tasklist_fg_focus = "#000000"
 
-theme.taglist_shape = gears.shape.rounded_rect
-theme.taglist_shape_focus = gears.shape.rounded_rect
-theme.taglist_shape_border_width = 1
-theme.taglist_shape_border_color = "#ffffff"
-theme.taglist_shape_border_width_empty = 0
-theme.taglist_shape_border_color_empty = "#000000"
-theme.taglist_shape_border_width_focus = 1
-theme.taglist_shape_border_color_focus = "#000000"
-theme.taglist_shape_border_width_urgent = 1
-theme.taglist_shape_border_color_urgent = "#000000"
+--theme.taglist_shape = gears.shape.rounded_rect
+--theme.taglist_shape_focus = gears.shape.rounded_rect
+--theme.taglist_shape_border_width = 1
+--theme.taglist_shape_border_color = "#ffffff"
+--theme.taglist_shape_border_width_empty = 0
+--theme.taglist_shape_border_color_empty = "#000000"
+--theme.taglist_shape_border_width_focus = 1
+--theme.taglist_shape_border_color_focus = "#000000"
+--theme.taglist_shape_border_width_urgent = 1
+--theme.taglist_shape_border_color_urgent = "#000000"
 
 theme.tooltip_bg = "#000000"
 theme.tooltip_fg = "#ffffff"
