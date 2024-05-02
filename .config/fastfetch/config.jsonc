@@ -6,6 +6,9 @@
     "width": 40,
     "height": 17
   },
+  "display": {
+    "separator": "  "
+  },
   "modules": [
     "title",
     "separator",
