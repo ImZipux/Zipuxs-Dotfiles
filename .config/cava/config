@@ -33,7 +33,7 @@ opengl = 1
 ; method = portaudio
 ; source = auto
 method = pulse
-source = Blue Snowball Mono
+source = auto
 
 [output]
 method = ncurses
