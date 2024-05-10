@@ -157,8 +157,8 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Wibar
 -- Create a textclock widget
-mytextclock = wibox.widget.textclock(" %l:%M:%S %p |  %a, %b %e, %Y ", 1, "America/New_York")
-month_calendar = awful.widget.calendar_popup.month({start_sunday = true, bg = '#c0c0c0'})
+mytextclock = wibox.widget.textclock(" %l:%M:%S %p  %a, %b %e, %Y", 1, "America/New_York")
+month_calendar = awful.widget.calendar_popup.month({start_sunday = true, bg = '#000000'})
 month_calendar:attach( mytextclock, "tr" )
 
 -- Debian Widget
@@ -175,7 +175,7 @@ myLogo = wibox.widget {
 	
 -- Power Menu Widget
 myPower = wibox.widget {
-	    text = " ",
+	    text = "",
 	    widget = wibox.widget.textbox
 	}
 
@@ -183,7 +183,7 @@ myPower = wibox.widget {
     {
         objects        = { myPower },
         timer_function = function()
-            return io.popen("uptime -p | awk '{printf \"Uptime: %d Days, %d Hours, %d Minutes\", $2, $4, $6}'"):read("*a")
+            return io.popen("uptime -p | awk '{print \"Uptime: \" $2, toupper( substr( $3, 1, 1 ) ) substr( $3, 2 ), $4, toupper( substr( $5, 1, 1 ) ) substr( $5, 2 ), $6, toupper( substr( $7, 1, 1 ) ) substr( $7, 2 )}'"):read("*a")
         end,
     }
 
@@ -194,7 +194,7 @@ myPower = wibox.widget {
     end)
 	
 --Weather Widget
-myWeather = awful.widget.watch("curl wttr.in/?format=%c%t | awk '{printf \" %d\", $1}'", 600)
+myWeather = awful.widget.watch("curl wttr.in/?format=%c%t | awk '{printf \"%d\", $1}'", 600)
 
 	myWeather:connect_signal("button::release",
 	    function()
@@ -269,7 +269,7 @@ myYouTube = awful.widget.watch({"bash", "-c", "/usr/bin/python3 ~/.config/awesom
 
 -- System Updates Widget
 myUpdates = wibox.widget {
-    text   = " ",
+    text   = "",
     widget = wibox.widget.textbox,
 }
 
@@ -292,13 +292,13 @@ local myUpdates_tooltip = awful.tooltip
 }
 
 -- Internet Speed Widget
-myNet = awful.widget.watch({"bash", "-c", "ifstat -i enp11s0 1s 1 | tail -n 1 | awk '{if ($1 < 1 && $2 < 1) {printf \" %.0fB  %.0fB \", $1*1000, $2*1000} else if ($1 >= 1000 || $2 >= 1000) {printf \" %.0fMB  %.0fMB \", $1/1000, $2/1000} else if ($1 >= 1000000 || $2 >= 1000000) {printf \" %.0fGB  %.0fGB \", $1/1000000, $2/1000000} else {printf \" %.0fKB  %.0fKB \", $1, $2}}'"}, 1)
+myNet = awful.widget.watch({"bash", "-c", "ifstat -i enp11s0 1s 1 | tail -n 1 | awk '{if ($1 < 1 && $2 < 1) {printf \" %.0fB  %.0fB\", $1*1000, $2*1000} else if ($1 >= 1000 || $2 >= 1000) {printf \" %.0fMB  %.0fMB\", $1/1000, $2/1000} else if ($1 >= 1000000 || $2 >= 1000000) {printf \" %.0fGB  %.0fGB\", $1/1000000, $2/1000000} else {printf \" %.0fKB  %.0fKB\", $1, $2}}'"}, 1)
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
                     awful.button({ }, 1, function(t) t:view_only()
                         if awful.tag.selected().name == "󰊠" then
-                            awful.tag.find_by_name(nil, "󰮯").name = "󰊠"
+                            awful.tag.find_by_name(awful.screen.focused(), "󰮯").name = "󰊠"
                             awful.tag.selected().name = "󰮯"
                         end
                     end),
@@ -315,13 +315,13 @@ local taglist_buttons = gears.table.join(
                                           end),
                     awful.button({ }, 4, function(t) awful.tag.viewnext(t.screen)
                         if awful.tag.selected().name == "󰊠" then
-                            awful.tag.find_by_name(nil, "󰮯").name = "󰊠"
+                            awful.tag.find_by_name(awful.screen.focused(), "󰮯").name = "󰊠"
                             awful.tag.selected().name = "󰮯"
                         end
                     end),
                     awful.button({ }, 5, function(t) awful.tag.viewprev(t.screen)
                         if awful.tag.selected().name == "󰊠" then
-                            awful.tag.find_by_name(nil, "󰮯").name = "󰊠"
+                            awful.tag.find_by_name(awful.screen.focused(), "󰮯").name = "󰊠"
                             awful.tag.selected().name = "󰮯"
                         end
                     end)
@@ -401,10 +401,33 @@ awful.screen.connect_for_each_screen(function(s)
     }
 
     -- Create a taglist widget
+    local tag_colors = {"#2121ff", "#d00000", "#ff9804", "#fbff02", "#0af300", "#008ff2", "#b20cff", "#ffb8ff", "#ffffff"}
+
     s.mytaglist = awful.widget.taglist {
         screen  = s,
         filter  = awful.widget.taglist.filter.all,
         buttons = taglist_buttons,
+        widget_template = {
+            {
+               id     = 'text_role',
+               widget = wibox.widget.textbox,
+            },
+            widget = wibox.container.background,
+            id = 'background_role',
+            create_callback = function(self, t, index, objects)
+               self:get_children_by_id('background_role')[1].fg = tag_colors[t.index]
+               self:connect_signal('mouse::enter', function()
+                    if self.fg ~= '#2121ff' then
+                        self.backup     = self.fg
+                        self.has_backup = true
+                    end
+                    self.fg = '#2121ff'
+                end)
+                self:connect_signal('mouse::leave', function()
+                    if self.has_backup then self.fg = self.backup end
+                end)
+            end
+         }
     }
     
 
@@ -424,11 +447,16 @@ awful.screen.connect_for_each_screen(function(s)
     rc = function(cr,w,h) gears.shape.partially_rounded_rect(cr, w, h, false, true, true, false, 20) end
     lrc = function(cr,w,h) gears.shape.partially_rounded_rect(cr, w, h, true, true, true, true, 20) end
     
-    s.mywibox = awful.wibar({ position = "top", screen = s, height = 35, ontop = false })
+    s.mywibox = awful.wibar({ position = "top", screen = s, height = 50, ontop = false })
 
-    widgetbg = "#c0c0c0"
-    underlinebg = "#ffffff"
-    bottomborder = 2
+    widgetbg = "#000000"
+    marginbg = "#ffffff"
+    marginleft = 2
+    marginright = 2
+    margintop = 2
+    marginbottom = 2
+    margincorners = 20
+    --bottom = bottomborder,
 
     -- Add widgets to the wibox
     s.mywibox:setup {
@@ -437,42 +465,41 @@ awful.screen.connect_for_each_screen(function(s)
         expand = "none",
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
-            {{myWeather, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
-	        {{wibox.widget.textbox(' | '), bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{myYouTube, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{wibox.widget.textbox(' | '), bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{awful.widget.watch({"bash", "-c", "vmstat 1 2 | tail -1 | awk '{printf \"  %d%\", 100-$15}'"}, 1), bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{wibox.widget.textbox(' '), bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{awful.widget.watch({"bash", "-c", "free -m | grep \"Mem:\" | awk '{printf \" %d%\", $3/$2*100}'"}, 1), bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{wibox.widget.textbox(' '), bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{awful.widget.watch({"bash", "-c", "df -H /dev/sda2 | grep \"/dev/sda2\" | awk '{printf \" %d%\", $5}'"}, 1), bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{wibox.widget.textbox(' '), bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{myNet, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
+            {{myWeather, top = margintop, bottom = marginbottom, left = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
+            {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+	        {{myYouTube, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{awful.widget.watch({"bash", "-c", "vmstat 1 2 | tail -1 | awk '{printf \" %d%\", 100-$15}'"}, 1), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{awful.widget.watch({"bash", "-c", "free -m | grep \"Mem:\" | awk '{printf \" %d%\", $3/$2*100}'"}, 1), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{awful.widget.watch({"bash", "-c", "df -H /dev/sda2 | grep \"/dev/sda2\" | awk '{printf \" %d%\", $5}'"}, 1), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{myNet, top = margintop, bottom = marginbottom, right = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
         },
         { -- Middle widgets
             layout = wibox.layout.fixed.horizontal,
-            {{myLogo, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
-            {{s.mytaglist, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            --{{s.mylayoutbox, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            --{{s.mytasklist, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{myPower, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
+            {{myLogo, top = margintop, bottom = marginbottom, left = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
+            {{s.mytaglist, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            --{{s.mylayoutbox, bottom = bottomborder, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            --{{s.mytasklist, bottom = bottomborder, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{myPower, top = margintop, bottom = marginbottom, right = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
 	    },
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-            {{myUpdates, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
-            {{wibox.widget.systray(), bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{myVolume, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{myMic, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{wibox.widget.textbox(' | '), bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{mytextclock, bottom = bottomborder, color = underlinebg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
+            {{myUpdates, top = margintop, bottom = marginbottom, left = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
+            {{wibox.widget.systray(), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{myVolume, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{myMic, top = margintop, bottom = marginbottom, right = marginright, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{mytextclock, top = margintop, bottom = marginbottom, right = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
         },
     },
-        --bottom = 0, -- don't forget to increase wibar height
     	--color = "#ffffff",
-        top = 10,
-        left = 10,
-        right = 10,
-        bottom = 0,
+        --top = 10,
+        --left = 10,
+        --right = 10,
+        --bottom = 0,
+        margins = 10,
     	widget = wibox.container.margin,
 }
 end)
@@ -483,13 +510,13 @@ root.buttons(gears.table.join(
     --awful.button({ }, 3, function () mymainmenu:toggle() end),
     awful.button({ }, 4, awful.tag.viewnext, function() 
         if awful.tag.selected().name == "󰊠" then
-            awful.tag.find_by_name(nil, "󰮯").name = "󰊠"
+            awful.tag.find_by_name(awful.screen.focused(), "󰮯").name = "󰊠"
             awful.tag.selected().name = "󰮯"
         end
     end),
     awful.button({ }, 5, awful.tag.viewprev, function() 
         if awful.tag.selected().name == "󰊠" then
-            awful.tag.find_by_name(nil, "󰮯").name = "󰊠"
+            awful.tag.find_by_name(awful.screen.focused(), "󰮯").name = "󰊠"
             awful.tag.selected().name = "󰮯"
         end
     end)
@@ -677,7 +704,7 @@ for i = 1, 9 do
                            tag:view_only()
                         end
                         if awful.tag.selected().name == "󰊠" then
-                            awful.tag.find_by_name(nil, "󰮯").name = "󰊠"
+                            awful.tag.find_by_name(awful.screen.focused(), "󰮯").name = "󰊠"
                             awful.tag.selected().name = "󰮯"
                         end
                   end,
@@ -874,7 +901,7 @@ end)
 client.connect_signal("mouse::enter", function(c)
     c:emit_signal("request::activate", "mouse_enter", {raise = false})
     if awful.tag.selected().name == "󰊠" then
-        awful.tag.find_by_name(nil, "󰮯").name = "󰊠"
+        awful.tag.find_by_name(awful.screen.focused(), "󰮯").name = "󰊠"
         awful.tag.selected().name = "󰮯"
     end
 end)
@@ -883,15 +910,18 @@ client.connect_signal("focus", function(c) c.border_color = beautiful.border_foc
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
 
---Autostart Applications
-awful.spawn.once("xset -dpms")
-awful.spawn.once("xset s off")
-awful.spawn.once("xset s noblank")
+-- Autostart Applications
+awful.spawn.easy_async_with_shell("xset -dpms")
+awful.spawn.easy_async_with_shell("xset s off")
+awful.spawn.easy_async_with_shell("xset s noblank")
 
-awful.spawn.once("exec /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1")
+awful.spawn.easy_async_with_shell("exec /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 ")
 
-awful.spawn.once("pactl set-sink-volume @DEFAULT_SINK@ 100%")
+awful.spawn.easy_async_with_shell("pactl set-sink-volume @DEFAULT_SINK@ 100%")
 
-awful.spawn.once("nm-applet")
-awful.spawn.once("firefox-esr")
-awful.spawn.once("discord")
+awful.spawn.easy_async_with_shell("picom -b")
+
+awful.spawn.easy_async_with_shell("nm-applet")
+awful.spawn.easy_async_with_shell("qpwgraph")
+awful.spawn.easy_async_with_shell("firefox-esr")
+awful.spawn.easy_async_with_shell("discord")
