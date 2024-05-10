@@ -59,7 +59,7 @@ higher_cutoff_freq = 20000
 # README.md contains further information on how to setup CAVA for JACK.
 #
 method = pulse
-source = Blue Snowball Mono
+source = auto
 
 # The options 'sample_rate', 'sample_bits', 'channels' and 'autoconnect' can be configured for some input methods:
 #   sample_rate: fifo, pipewire, sndio, oss
@@ -190,5 +190,5 @@ noise_reduction = 0
 # Remember to uncomment more than one key! More keys = more precision.
 # Look at readme.md on github for further explanations and examples.
 1 = 1 # bass
-2 = 1 # midtone
-3 = 1 # treble
+2 = 0.75 # midtone
+3 = 0.5 # treble
