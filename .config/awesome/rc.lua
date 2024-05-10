@@ -157,8 +157,34 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Wibar
 -- Create a textclock widget
+local function rounded_shape(size, partial)
+        return function(cr, width, height)
+                   gears.shape.rounded_rect(cr, width, height, size)
+        end
+end
 mytextclock = wibox.widget.textclock(" %l:%M:%S %p  %a, %b %e, %Y", 1, "America/New_York")
-month_calendar = awful.widget.calendar_popup.month({start_sunday = true, bg = '#000000'})
+month_calendar = awful.widget.calendar_popup.month({
+	start_sunday = true,
+	long_weekdays = true,
+	bg = "#000000",
+	style_month = {
+		shape = rounded_shape(20),
+		border_width = 2,
+		border_color = "#ffffff"
+	},
+	style_header = {
+		shape = rounded_shape(20)
+	},
+	style_weekday = {
+		shape = rounded_shape(20)
+	},
+	style_normal = {
+		shape = rounded_shape(10,10,20)
+	},
+	style_focus = {
+		shape = rounded_shape(10,10,20)
+	}
+})
 month_calendar:attach( mytextclock, "tr" )
 
 -- Debian Widget
@@ -911,17 +937,17 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- }}}
 
 -- Autostart Applications
-awful.spawn.easy_async_with_shell("xset -dpms")
-awful.spawn.easy_async_with_shell("xset s off")
-awful.spawn.easy_async_with_shell("xset s noblank")
-
-awful.spawn.easy_async_with_shell("exec /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 ")
-
-awful.spawn.easy_async_with_shell("pactl set-sink-volume @DEFAULT_SINK@ 100%")
-
-awful.spawn.easy_async_with_shell("picom -b")
-
-awful.spawn.easy_async_with_shell("nm-applet")
-awful.spawn.easy_async_with_shell("qpwgraph")
-awful.spawn.easy_async_with_shell("firefox-esr")
-awful.spawn.easy_async_with_shell("discord")
+--awful.spawn.easy_async_with_shell("xset -dpms")
+--awful.spawn.easy_async_with_shell("xset s off")
+--awful.spawn.easy_async_with_shell("xset s noblank")
+--
+--awful.spawn.easy_async_with_shell("exec /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 ")
+--
+--awful.spawn.easy_async_with_shell("pactl set-sink-volume @DEFAULT_SINK@ 100%")
+--
+--awful.spawn.easy_async_with_shell("picom -b")
+--
+--awful.spawn.easy_async_with_shell("nm-applet")
+--awful.spawn.easy_async_with_shell("qpwgraph")
+--awful.spawn.easy_async_with_shell("firefox-esr")
+--awful.spawn.easy_async_with_shell("discord")
