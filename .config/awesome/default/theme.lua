@@ -17,15 +17,15 @@ theme.client_shape_rounded = function(cr,w,h)
     gears.shape.rounded_rect(cr,w,h,20)
 end
 
-theme.font          = "OpenDyslexic Nerd Font 12"
+theme.font          = "OpenDyslexic Nerd Font 16"
 
-theme.bg_normal     = "#c0c0c000"
-theme.bg_focus      = "#c0c0c0"
+theme.bg_normal     = "#ffffff00"
+theme.bg_focus      = "#ffffff"
 theme.bg_urgent     = "#ff0000"
 theme.bg_minimize   = "#444444"
-theme.bg_systray    = "#c0c0c000"
+theme.bg_systray    = "#00000000"
 
-theme.fg_normal     = "#000000"
+theme.fg_normal     = "#ffffff"
 theme.fg_focus      = "#000000"
 theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#000000"
@@ -36,12 +36,17 @@ theme.border_normal = "#000000"
 theme.border_focus  = "#ffffff"
 theme.border_marked = "#91231c"
 theme.border_color  = "#ffffff"
+theme.border_shape = gears.shape.rounded_rect
 
-theme.tasklist_bg_focus = "#c0c0c0"
+theme.tasklist_bg_focus = "#ffffff"
 theme.tasklist_fg_focus = "#000000"
 
-theme.taglist_fg_occupied = "#000000"
-theme.taglist_fg_empty = "#ffffff"
+theme.taglist_fg_occupied = "#2121ff"
+--theme.taglist_fg_empty = "#c0c0c0"
+theme.taglist_fg_focus = "#fdff00"
+theme.taglist_bg_focus = "#000000"
+theme.taglist_bg_occupied = "#000000"
+theme.taglist_bg_empty = "#000000"
 --theme.taglist_shape = gears.shape.rounded_rect
 --theme.taglist_shape_focus = gears.shape.rounded_rect
 --theme.taglist_shape_border_width = 1
