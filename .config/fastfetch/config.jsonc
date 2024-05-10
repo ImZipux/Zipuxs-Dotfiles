@@ -7,28 +7,110 @@
     "height": 17
   },
   "display": {
-    "separator": "  "
+    "separator": "|"
   },
   "modules": [
     "title",
     "separator",
-    "os",
-    "kernel",
-    "uptime",
-    "packages",
-    "shell",
-    "wm",
-    "theme",
-    "icons",
-    "font",
-    "cursor",
-    "terminal",
-    "terminalfont",
-    "cpu",
-    "gpu",
-    "memory",
-    "swap",
-    "disk",
+    {
+      "type": "command",
+      "shell": "/bin/sh",
+      "text": "curl wttr.in/?format=%c%t",
+      "key": "",
+      "keyColor": "red"
+    },
+    {
+      "type": "command",
+      "shell": "/bin/sh",
+      "text": "/usr/bin/python3 ~/.config/awesome/subscribers.py",
+      "key": "",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "os",
+      "key": "",
+      "keyColor": "yellow"
+    },
+    {
+      "type": "kernel",
+      "key": "",
+      "keyColor": "green"
+    },
+    {
+      "type": "uptime",
+      "key": "",
+      "keyColor": "blue"
+    },
+    {
+      "type": "packages",
+      "key": "",
+      "keyColor": "magenta"
+    },
+    {
+      "type": "shell",
+      "key": "",
+      "keyColor": "red"
+    },
+    {
+      "type": "wm",
+      "key": "",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "theme",
+      "key": "",
+      "keyColor": "yellow"
+    },
+    {
+      "type": "icons",
+      "key": "",
+      "keyColor": "green"
+    },
+    {
+      "type": "font",
+      "key": "",
+      "keyColor": "blue"
+    },
+    {
+      "type": "cursor",
+      "key": "",
+      "keyColor": "magenta"
+    },
+    {
+      "type": "terminal",
+      "key": "",
+      "keyColor": "red"
+    },
+    {
+      "type": "terminalfont",
+      "key": "",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "cpu",
+      "key": "",
+      "keyColor": "yellow"
+    },
+    {
+      "type": "gpu",
+      "key": "",
+      "keyColor": "green"
+    },
+    {
+      "type": "memory",
+      "key": "",
+      "keyColor": "blue"
+    },
+    {
+      "type": "swap",
+      "key": "",
+      "keyColor": "magenta"
+    },
+    {
+      "type": "disk",
+      "key": "",
+      "keyColor": "red"
+    },
     "break",
     "colors"
   ]
