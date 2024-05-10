@@ -12,7 +12,7 @@ autosens = 1
 
 # Manual sensitivity in %. If autosens is enabled, this will only be the initial value.
 # 200 means double height. Accepts only non-negative values.
-#sensitivity = 100
+sensitivity = 5
 
 # The number of bars (0-512). 0 sets it to auto (fill up console).
 # Bars' width and space between bars in number of characters.
@@ -59,7 +59,7 @@ higher_cutoff_freq = 20000
 # README.md contains further information on how to setup CAVA for JACK.
 #
 method = pulse
-source = auto
+source = Blue Snowball Mono
 
 # The options 'sample_rate', 'sample_bits', 'channels' and 'autoconnect' can be configured for some input methods:
 #   sample_rate: fifo, pipewire, sndio, oss
@@ -181,7 +181,7 @@ waves = 1
 # Noise reduction, int 0 - 100. default 77
 # the raw visualization is very noisy, this factor adjusts the integral and gravity filters to keep the signal smooth
 # 100 will be very slow and smooth, 0 will be fast but noisy.
-noise_reduction = 85
+noise_reduction = 0
 
 
 [eq]
