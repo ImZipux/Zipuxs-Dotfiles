@@ -10,7 +10,14 @@
     "separator": "|"
   },
   "modules": [
-    "title",
+    {
+      "type": "title",
+      "color": {
+		  "user": "white",
+		  "at": "white",
+		  "host": "white"
+      }
+    },
     "separator",
     {
       "type": "command",
