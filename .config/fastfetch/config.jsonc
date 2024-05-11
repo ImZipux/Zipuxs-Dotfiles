@@ -7,17 +7,18 @@
     "height": 17
   },
   "display": {
-    "separator": "|"
+    "separator": "|",
+    "color": "white"
   },
   "modules": [
-    {
-      "type": "title",
-      "color": {
+	{
+	  "type": "title",
+	  "color": {
 		  "user": "white",
 		  "at": "white",
 		  "host": "white"
-      }
-    },
+		}
+	},
     "separator",
     {
       "type": "command",
