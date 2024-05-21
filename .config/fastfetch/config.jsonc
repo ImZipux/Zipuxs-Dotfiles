@@ -3,8 +3,8 @@
   "logo": {
     "type": "kitty-direct",
     "source": "~/.config/fastfetch/logo.png",
-    "width": 40,
-    "height": 17
+    "width": 20,
+    "height": 9
   },
   "display": {
     "separator": "|",
@@ -23,101 +23,101 @@
     {
       "type": "command",
       "shell": "/bin/sh",
-      "text": "curl wttr.in/?format=%c%t",
-      "key": "",
-      "keyColor": "red"
+      "text": "/usr/bin/python3 ~/.config/fastfetch/weather.py",
+      "key": "",
+      "keyColor": "white"
     },
     {
       "type": "command",
       "shell": "/bin/sh",
-      "text": "/usr/bin/python3 ~/.config/awesome/subscribers.py",
+      "text": "/usr/bin/python3 ~/.config/fastfetch/subscribers.py",
       "key": "",
-      "keyColor": "cyan"
+      "keyColor": "red"
     },
     {
       "type": "os",
-      "key": "",
-      "keyColor": "yellow"
+      "key": "󰣇",
+      "keyColor": "cyan"
     },
     {
       "type": "kernel",
       "key": "",
-      "keyColor": "green"
+      "keyColor": "yellow"
     },
     {
       "type": "uptime",
       "key": "",
-      "keyColor": "blue"
+      "keyColor": "green"
     },
     {
       "type": "packages",
       "key": "",
-      "keyColor": "magenta"
+      "keyColor": "blue"
     },
     {
       "type": "shell",
       "key": "",
-      "keyColor": "red"
+      "keyColor": "magenta"
     },
     {
       "type": "wm",
       "key": "",
-      "keyColor": "cyan"
+      "keyColor": "red"
     },
     {
       "type": "theme",
       "key": "",
-      "keyColor": "yellow"
+      "keyColor": "cyan"
     },
     {
       "type": "icons",
       "key": "",
-      "keyColor": "green"
+      "keyColor": "yellow"
     },
     {
       "type": "font",
       "key": "",
-      "keyColor": "blue"
+      "keyColor": "green"
     },
     {
       "type": "cursor",
       "key": "",
-      "keyColor": "magenta"
+      "keyColor": "blue"
     },
     {
       "type": "terminal",
       "key": "",
-      "keyColor": "red"
+      "keyColor": "magenta"
     },
     {
       "type": "terminalfont",
       "key": "",
-      "keyColor": "cyan"
+      "keyColor": "red"
     },
     {
       "type": "cpu",
       "key": "",
-      "keyColor": "yellow"
+      "keyColor": "cyan"
     },
     {
       "type": "gpu",
       "key": "",
-      "keyColor": "green"
+      "keyColor": "yellow"
     },
     {
       "type": "memory",
       "key": "",
-      "keyColor": "blue"
+      "keyColor": "green"
     },
     {
       "type": "swap",
       "key": "",
-      "keyColor": "magenta"
+      "keyColor": "blue"
     },
     {
       "type": "disk",
       "key": "",
-      "keyColor": "red"
+      "keyColor": "magenta"
     },
     "break",
     "colors"
