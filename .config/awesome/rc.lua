@@ -30,6 +30,16 @@ local function set_shape(c)
     end
 end
 
+-- Padding
+awful.screen.connect_for_each_screen(function(s)
+	s.padding = {
+		left = 10,
+		right = 0,
+		top = 0,
+		bottom = 0
+	}
+end)
+
 client.connect_signal('request::manage', function(c)
       set_shape(c)
 end)
@@ -49,10 +59,6 @@ end)
 client.connect_signal('property::maximized', function(c)
       set_shape(c)
 end)
-
--- Load Debian menu entries
-local debian = require("debian.menu")
-local has_fdo, freedesktop = pcall(require, "freedesktop")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -81,7 +87,7 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("~/.config/awesome/default/theme.lua")
+beautiful.init("~/.config/awesome/themes/zipux/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "kitty"
@@ -96,8 +102,12 @@ editor_cmd = terminal .. " -e " .. editor
 modkey = "Mod4"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
+-- Custom Layouts
+local mylayout = require("layouts.centered")
+
 awful.layout.layouts = {
     awful.layout.suit.floating,
+    mylayout,
     --awful.layout.suit.tile,
     --awful.layout.suit.tile.left,
     --awful.layout.suit.tile.bottom,
@@ -105,7 +115,7 @@ awful.layout.layouts = {
     --awful.layout.suit.fair,
     --awful.layout.suit.fair.horizontal,
     --awful.layout.suit.spiral,
-    awful.layout.suit.spiral.dwindle,
+    --awful.layout.suit.spiral.dwindle,
     --awful.layout.suit.max,
     --awful.layout.suit.max.fullscreen,
     --awful.layout.suit.magnifier,
@@ -128,21 +138,6 @@ myawesomemenu = {
 
 local menu_awesome = { "awesome", myawesomemenu, beautiful.awesome_icon }
 local menu_terminal = { "open terminal", terminal }
-
-if has_fdo then
-    mymainmenu = freedesktop.menu.build({
-        before = { menu_awesome },
-        after =  { menu_terminal }
-    })
-else
-    mymainmenu = awful.menu({
-        items = {
-                  menu_awesome,
-                  { "Debian", debian.menu.Debian_menu.Debian },
-                  menu_terminal,
-                }
-    })
-end
 
 
 mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
@@ -187,9 +182,9 @@ month_calendar = awful.widget.calendar_popup.month({
 })
 month_calendar:attach( mytextclock, "tr" )
 
--- Debian Widget
+-- App Widget
 myLogo = wibox.widget {
-	    image = ".config/awesome/default/button.png",
+	    image = ".config/awesome/themes/zipux/button.png",
 	    widget = wibox.widget.imagebox
 	}
 
@@ -215,16 +210,25 @@ myPower = wibox.widget {
 
 	myPower:connect_signal("button::release", function(c, _, _, button)
 		if button == 1 then
-            awful.spawn("rofi -show power-menu -modi power-menu:rofi-power-menu")
+            awful.spawn("rofi -show power-menu -modi power-menu:~/.local/bin/rofi-power-menu")
 	    end
     end)
 	
 --Weather Widget
-myWeather = awful.widget.watch("curl wttr.in/?format=%c%t | awk '{printf \"%d\", $1}'", 600)
+--myWeather = awful.widget.watch("curl wttr.in/?format=%c%t&u | awk '{printf \"%d\", $1}'", 600)
+myWeather = awful.widget.watch({"bash", "-c", "/usr/bin/python3 ~/.config/awesome/scripts/weather.py | awk '{print $1, $2}'"}, 600)
+
+local myWeather_tooltip = awful.tooltip
+{
+    objects        = { myWeather },
+    timer_function = function()
+        return io.popen("/usr/bin/python3 ~/.config/awesome/scripts/weather.py"):read("*a")
+    end,
+}
 
 	myWeather:connect_signal("button::release",
 	    function()
-		awful.spawn("firefox-esr -new-tab https://www.weather.com/")
+		awful.spawn("firefox -new-tab https://www.weather.com/")
 	    end
 	)
 	
@@ -238,21 +242,21 @@ local myVolume_tooltip = awful.tooltip
 {
     objects        = { myVolume },
     timer_function = function()
-        return io.popen("pactl get-sink-volume 0 | awk '{printf \"%d%\", $5}' | sed 's/..$//'"):read("*a")
+        return io.popen("wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf \"%d%\", $2*100}'"):read("*a")
     end,
 }
         
     myVolume:connect_signal("button::release", function(c, _, _, button)
         if button == 1 and c.text == "󰕾" then
-            awful.spawn.easy_async_with_shell("pactl set-sink-mute @DEFAULT_SINK@ toggle")
+            awful.spawn.easy_async_with_shell("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")
             c.text = "󰝟"
         elseif button == 1 and c.text == "󰝟" then
-            awful.spawn.easy_async_with_shell("pactl set-sink-mute @DEFAULT_SINK@ toggle")
+            awful.spawn.easy_async_with_shell("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")
             c.text = "󰕾"
         elseif button == 4 then
-            awful.spawn.easy_async_with_shell("pactl set-sink-volume @DEFAULT_SINK@ +1%")
+            awful.spawn.easy_async_with_shell("wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%+")
         elseif button == 5 then
-            awful.spawn.easy_async_with_shell("pactl set-sink-volume @DEFAULT_SINK@ -1%")
+            awful.spawn.easy_async_with_shell("wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%-")
         end
     end)
 
@@ -266,30 +270,30 @@ local myMic_tooltip = awful.tooltip
 {
     objects        = { myMic },
     timer_function = function()
-        return io.popen("pactl get-source-volume 0 | awk '{printf \"%d%\", $5}' | sed 's/..$//'"):read("*a")
+        return io.popen("wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | awk '{printf \"%d%\", $2*100}'"):read("*a")
     end,
 }
         
     myMic:connect_signal("button::release", function(c, _, _, button)
         if button == 1 and c.text == "" then
-            awful.spawn.easy_async_with_shell("pactl set-source-mute 0 toggle")
+            awful.spawn.easy_async_with_shell("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle")
             c.text = ""
         elseif button == 1 and c.text == "" then
-            awful.spawn.easy_async_with_shell("pactl set-source-mute 0 toggle")
+            awful.spawn.easy_async_with_shell("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle")
             c.text = ""
         elseif button == 4 then
-            awful.spawn.easy_async_with_shell("pactl set-source-volume 0 +1%")
+            awful.spawn.easy_async_with_shell("wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 10%+")
         elseif button == 5 then
-            awful.spawn.easy_async_with_shell("pactl set-source-volume 0 -1%")
+            awful.spawn.easy_async_with_shell("wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 10%-")
         end
     end)
 
 -- YouTube Widget
-myYouTube = awful.widget.watch({"bash", "-c", "/usr/bin/python3 ~/.config/awesome/subscribers.py | awk '{printf \" %d\", $1}'"}, 600)
-
+myYouTube = awful.widget.watch({"bash", "-c", "/usr/bin/python3 ~/.config/awesome/scripts/subscribers.py"}, 600)
+ 
 	myYouTube:connect_signal("button::release",
 	    function()
-		awful.spawn("firefox-esr -new-tab https://studio.youtube.com/")
+		awful.spawn("firefox -new-tab https://studio.youtube.com/")
 	    end
 	)
 
@@ -301,11 +305,7 @@ myUpdates = wibox.widget {
 
 myUpdates:connect_signal("button::release", function(c, _, _, button)
     if button == 1 then
-        awful.spawn.easy_async_with_shell("pkexec nala update")
-    elseif button == 2 then
-        awful.spawn.easy_async_with_shell("kitty --hold apt list --upgradable")
-    elseif button == 3 then
-        awful.spawn.easy_async_with_shell("kitty --hold sudo nala upgrade")
+        awful.spawn.easy_async_with_shell("kitty --hold yay -Syu")
     end
 end)
 
@@ -313,12 +313,32 @@ local myUpdates_tooltip = awful.tooltip
 {
     objects        = { myUpdates },
     timer_function = function()
-        return io.popen("apt list --upgradable | wc -l | awk '{printf \"%d Update(s) Available\", $1-1}'"):read("*a")
+        return io.popen("checkupdates | wc -l | awk '{printf \"%d Update(s) Available\", $1}'"):read("*a")
     end,
 }
 
 -- Internet Speed Widget
-myNet = awful.widget.watch({"bash", "-c", "ifstat -i enp11s0 1s 1 | tail -n 1 | awk '{if ($1 < 1 && $2 < 1) {printf \" %.0fB  %.0fB\", $1*1000, $2*1000} else if ($1 >= 1000 || $2 >= 1000) {printf \" %.0fMB  %.0fMB\", $1/1000, $2/1000} else if ($1 >= 1000000 || $2 >= 1000000) {printf \" %.0fGB  %.0fGB\", $1/1000000, $2/1000000} else {printf \" %.0fKB  %.0fKB\", $1, $2}}'"}, 1)
+myNetDown = awful.widget.watch({"bash", "-c", "ifdata -bips enp11s0 | awk '{\
+	if ($1 >= 1000000000)\
+		{printf \" %.0fGB\", $1/1000000000}\
+	else if ($1 >= 1000000)\
+		{printf \" %.0fMB\", $1/1000000}\
+	else if ($1 >= 1000)\
+		{printf \" %.0fKB\", $1/1000}\
+	else\
+		{printf \" %.0fB\", $1}\
+}'"}, 1)
+
+myNetUp = awful.widget.watch({"bash", "-c", "ifdata -bops enp11s0 | awk '{\
+	if ($1 >= 1000000000)\
+		{printf \" %.0fGB\", $1/1000000000}\
+	else if ($1 >= 1000000)\
+		{printf \" %.0fMB\", $1/1000000}\
+	else if ($1 >= 1000)\
+		{printf \" %.0fKB\", $1/1000}\
+	else\
+		{printf \" %.0fB\", $1}\
+}'"}, 1)
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
@@ -499,15 +519,17 @@ awful.screen.connect_for_each_screen(function(s)
             {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{awful.widget.watch({"bash", "-c", "free -m | grep \"Mem:\" | awk '{printf \" %d%\", $3/$2*100}'"}, 1), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{awful.widget.watch({"bash", "-c", "df -H /dev/sda2 | grep \"/dev/sda2\" | awk '{printf \" %d%\", $5}'"}, 1), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{awful.widget.watch({"bash", "-c", "df -H /dev/sda3 | grep \"/dev/sda3\" | awk '{printf \" %d%\", $5}'"}, 1), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{myNet, top = margintop, bottom = marginbottom, right = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
+            {{myNetDown, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{myNetUp, top = margintop, bottom = marginbottom, right = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
         },
         { -- Middle widgets
             layout = wibox.layout.fixed.horizontal,
             {{myLogo, top = margintop, bottom = marginbottom, left = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
             {{s.mytaglist, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            --{{s.mylayoutbox, bottom = bottomborder, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{s.mylayoutbox, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             --{{s.mytasklist, bottom = bottomborder, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{myPower, top = margintop, bottom = marginbottom, right = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
 	    },
@@ -687,8 +709,8 @@ clientkeys = gears.table.join(
               {description = "move to screen", group = "client"}),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
               {description = "toggle keep on top", group = "client"}),
-    --awful.key({ modkey,           }, "t",      function (c) c.sticky = not c.sticky            end,
-              --{description = "toggle sticky", group = "client"}),
+    awful.key({ modkey,           }, "g",      function (c) c.sticky = not c.sticky            end,
+              {description = "toggle sticky", group = "client"}),
     awful.key({ modkey,           }, "n",
         function (c)
             -- The client currently has the input focus, so it cannot be
@@ -935,19 +957,3 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
-
--- Autostart Applications
---awful.spawn.easy_async_with_shell("xset -dpms")
---awful.spawn.easy_async_with_shell("xset s off")
---awful.spawn.easy_async_with_shell("xset s noblank")
---
---awful.spawn.easy_async_with_shell("exec /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 ")
---
---awful.spawn.easy_async_with_shell("pactl set-sink-volume @DEFAULT_SINK@ 100%")
---
---awful.spawn.easy_async_with_shell("picom -b")
---
---awful.spawn.easy_async_with_shell("nm-applet")
---awful.spawn.easy_async_with_shell("qpwgraph")
---awful.spawn.easy_async_with_shell("firefox-esr")
---awful.spawn.easy_async_with_shell("discord")
