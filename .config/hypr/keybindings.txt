@@ -1,0 +1,57 @@
+ZIPUX'S KEYBINDINGS 
+-----------------------------------------------------------------
+                                        
+General  
+-----------------------------------------------------------------
+Super + S             = List Of Keybindings
+Super + Return     = Terminal
+Super + D             = Rofi
+Super + F             = Thunar
+Super + PrintScrn  = Screenshot
+Super + Space      = Toggle Floating
+Super + Q            = Kill Window
+Super + R            = Restart Waybar
+Super + Shift + Q = Exit Hyprland
+                                        
+Move/Resize Windows 
+-----------------------------------------------------------------
+Super + Left-Click  = Move Window
+Super + Right-Click = Resize Window
+                                        
+Scroll Workspaces 
+-----------------------------------------------------------------
+Super + Up-Scroll     = Scroll Up The Workspaces
+Super + Down-Scroll = Scroll Down The Workspaces
+                                        
+Move Focus  
+-----------------------------------------------------------------
+Super + Left  = Left Window Focus
+Super + Right = Right Window Focus
+Super + Up     = Up Window Focus
+Super + Down = Down Window Focus
+                                        
+Switch Workspaces 
+-----------------------------------------------------------------
+Super + 1 = Workspace 1   
+Super + 2 = Workspace 2   
+Super + 3 = Workspace 3   
+Super + 4 = Workspace 4   
+Super + 5 = Workspace 5   
+Super + 6 = Workspace 6   
+Super + 7 = Workspace 7   
+Super + 8 = Workspace 8   
+Super + 9 = Workspace 9   
+Super + 0 = Workspace 10   
+                                        
+Move To Workspace  
+-----------------------------------------------------------------
+Super + Shift + 1 = Move To Workspace 1
+Super + Shift + 2 = Move To Workspace 2
+Super + Shift + 3 = Move To Workspace 3
+Super + Shift + 4 = Move To Workspace 4
+Super + Shift + 5 = Move To Workspace 5
+Super + Shift + 6 = Move To Workspace 6
+Super + Shift + 7 = Move To Workspace 7
+Super + Shift + 8 = Move To Workspace 8
+Super + Shift + 9 = Move To Workspace 9
+Super + Shift + 0 = Move To Workspace 10
