@@ -1,0 +1,175 @@
+// -*- mode: jsonc -*-
+{
+    // "layer": "top", // Waybar at top layer
+    // "position": "bottom", // Waybar position (top|bottom|left|right)
+    // "height": 40, // Waybar height (to be removed for auto height)
+    // "width": 1280, // Waybar width
+    "spacing": 0, // Gaps between modules (4px)
+    "margin": 5,
+    // Choose the order of the modules
+    "modules-left": [
+		"custom/weather",
+		"custom/youtube",
+		"cpu",
+		"memory",
+		"disk",
+    ],
+    "modules-center": [
+		"image#appicon",
+		"hyprland/workspaces",
+		"hyprland/window",
+		"cava",
+		"custom/powericon"
+    ],
+    "modules-right": [
+		"tray",
+		"custom/updatesicon",
+		"network",
+		"pulseaudio",
+        "clock",
+    ],
+    // Modules configuration
+    "custom/weather": {
+		"exec": "/usr/bin/python3 ~/.config/waybar/scripts/weather.py",
+		"on-click": "firefox -new-tab https://www.weather.com/",
+		"tooltip": false,
+		"interval": 600,
+	},
+	"custom/youtube": {
+		"exec": "/usr/bin/python3 ~/.config/waybar/scripts/subscribers.py",
+		"on-click-right": "firefox -new-tab https://studio.youtube.com/",
+		"tooltip": "false",
+		"interval": 600,
+	},
+    "image#appicon": {
+		"path": "/home/zipux/.config/hypr/button.svg",
+		"size": 20,
+		"on-click": "rofi -show drun",
+		"tooltip": false,
+	},
+	"custom/powericon": {
+		"exec": "uptime -p | awk '{print \"Uptime: \" $2, toupper( substr( $3, 1, 1 ) ) substr( $3, 2 ), $4, toupper( substr( $5, 1, 1 ) ) substr( $5, 2 ), $6, toupper( substr( $7, 1, 1 ) ) substr( $7, 2 )}'",
+		"format-alt": "",
+		"on-click-right": "wlogout",
+		"tooltip": false,
+		"interval": 1,
+	},
+	"custom/updatesicon": {
+		"exec": "checkupdates | wc -l | awk '{printf \"%d\", $1}'",
+		"format-alt": "󰚰",
+		"on-click-right": "kitty --hold yay",
+		"tooltip": false,
+		"interval": 600,
+	},
+	"hyprland/window": {
+		"format": "{title}",
+		"tooltip": false,
+		//"max-length": 50,
+		"separate-outputs": true,
+		"icon": true,
+		"icon-size": 20,
+	},
+    "hyprland/workspaces": {
+		"active-only": false,
+        "all-outputs": false,
+        "format": "{icon}",
+        "disable-scroll": true,
+        "on-scroll-up": "hyprctl dispatch workspace e+1",
+		"on-scroll-down": "hyprctl dispatch workspace e-1",
+		"format-icons": {
+		  "1": "",
+		  "2": "",
+		  "3": "",
+		  "4": "",
+		  "5": "",
+		  "6": "",
+		  "7": "",
+		  "8": "",
+		  "9": "",
+		  "10": "",
+		  "active": "󰮯",
+		  "urgent": "󰊠",
+		},
+        //"persistent-workspaces": {
+        //    "1": [],
+        //    "2": [],
+        //    "3": [],
+        //    "4": [],
+        //    "5": [],
+        //    "6": [],
+        //    "7": [],
+        //    "8": [],
+        //    "9": [],
+        //    "10": [],
+        //},
+    },
+    "cava": {
+        //"cava_config": "~.config/cava/config",
+        "framerate": 60,
+        "autosens": 1,
+        "sensitivity": 2,
+        "bars": 5,
+        "lower_cutoff_freq": 20,
+        "higher_cutoff_freq": 20000,
+        "method": "pipewire",
+        "source": "auto",
+        "stereo": false,
+        "reverse": false,
+        "bar_delimiter": 0,
+        "monstercat": true,
+        "waves": true,
+        "noise_reduction": 0.77,
+        "input_delay": 1,
+        "format-icons" : ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" ],
+    },
+    "tray": {
+        "icon-size": 20,
+        "spacing": 0,
+        "tooltip": "false",
+    },
+    "clock": {
+        "timezone": "America/New_York",
+        "tooltip-format": "<big>{calendar}</big>",
+        "format": " {:%I:%M:%S %p  %a, %b %d, %Y}",
+        "interval": 1,
+    },
+    "cpu": {
+        "format": "  {usage}% ",
+        "tooltip": false,
+        "interval": 1,
+    },
+    "memory": {
+        "format": " {}% ",
+        "tooltip": false,
+        "interval": 1,
+    },
+    "disk": {
+        "format": " {percentage_used}% ",
+        "tooltip": false,
+        "interval": 1,
+    },
+    "network": {
+		"interface": "enp11s0",
+		"format-wifi": "",
+		"format-ethernet": "",
+		"format-disconnected": "",
+		"format-alt": " {bandwidthDownBytes}  {bandwidthUpBytes}",
+		"tooltip-format": " {bandwidthDownBytes}  {bandwidthUpBytes}",
+		"tooltip": "false",
+		"interval": 1,
+	},
+    "pulseaudio": {
+        // "scroll-step": 1, // %, can be a float
+        "format": "{icon}",
+        "format-alt": " {icon} {volume}%  {format_source}",
+        "tooltip": "true",
+        "tooltip-format": "{icon} {volume}%  {format_source}",
+        "format-muted": "",
+        "format-source": "{volume}%",
+        "format-source-muted": "",
+        "format-icons": {
+            "default": ["", "", ""]
+        },
+        "on-click-right": "pavucontrol"
+    },
+}
