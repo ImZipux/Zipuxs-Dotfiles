@@ -565,7 +565,6 @@ awful.screen.connect_for_each_screen(function(s)
             layout = wibox.layout.fixed.horizontal,
             {{myUpdates, top = margintop, bottom = marginbottom, left = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
             {{wibox.widget.systray(), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{myEthernet, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{myVolume, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{myMic, top = margintop, bottom = marginbottom, right = marginright, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{mytextclock, top = margintop, bottom = marginbottom, right = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
