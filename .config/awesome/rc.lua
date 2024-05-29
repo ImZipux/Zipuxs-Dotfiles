@@ -91,7 +91,7 @@ beautiful.init("~/.config/awesome/themes/zipux/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "kitty"
-editor = os.getenv("EDITOR") or "editor"
+editor = os.getenv("EDITOR") or "geany"
 editor_cmd = terminal .. " -e " .. editor
 
 -- Default modkey.
@@ -157,7 +157,7 @@ local function rounded_shape(size, partial)
                    gears.shape.rounded_rect(cr, width, height, size)
         end
 end
-mytextclock = wibox.widget.textclock(" %l:%M:%S %p  %a, %b %e, %Y", 1, "America/New_York")
+mytextclock = wibox.widget.textclock("  %l:%M:%S %p  %a, %b %e, %Y ", 1, "America/New_York")
 month_calendar = awful.widget.calendar_popup.month({
 	start_sunday = true,
 	long_weekdays = true,
@@ -210,13 +210,13 @@ myPower = wibox.widget {
 
 	myPower:connect_signal("button::release", function(c, _, _, button)
 		if button == 1 then
-            awful.spawn("rofi -show power-menu -modi power-menu:~/.local/bin/rofi-power-menu")
+            awful.spawn("rofi -show power-menu -modi power-menu:rofi-power-menu")
 	    end
     end)
 	
 --Weather Widget
 --myWeather = awful.widget.watch("curl wttr.in/?format=%c%t&u | awk '{printf \"%d\", $1}'", 600)
-myWeather = awful.widget.watch({"bash", "-c", "/usr/bin/python3 ~/.config/awesome/scripts/weather.py | awk '{print $1, $2}'"}, 600)
+myWeather = awful.widget.watch({"bash", "-c", "/usr/bin/python3 ~/.config/awesome/scripts/weather.py"}, 600)
 
 local myWeather_tooltip = awful.tooltip
 {
@@ -331,13 +331,13 @@ myNetDown = awful.widget.watch({"bash", "-c", "ifdata -bips enp11s0 | awk '{\
 
 myNetUp = awful.widget.watch({"bash", "-c", "ifdata -bops enp11s0 | awk '{\
 	if ($1 >= 1000000000)\
-		{printf \" %.0fGB\", $1/1000000000}\
+		{printf \" %.0fGB \", $1/1000000000}\
 	else if ($1 >= 1000000)\
-		{printf \" %.0fMB\", $1/1000000}\
+		{printf \" %.0fMB \", $1/1000000}\
 	else if ($1 >= 1000)\
-		{printf \" %.0fKB\", $1/1000}\
+		{printf \" %.0fKB \", $1/1000}\
 	else\
-		{printf \" %.0fB\", $1}\
+		{printf \" %.0fB \", $1}\
 }'"}, 1)
 
 -- Create a wibox for each screen and add it
@@ -475,25 +475,53 @@ awful.screen.connect_for_each_screen(function(s)
             end
          }
     }
-    
 
     -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist {
         screen  = s,
         filter  = awful.widget.tasklist.filter.focused,
         --buttons = tasklist_buttons,
-        style = {
-        	align = "center",
-        	tasklist_disable_icon = true,
-        }
-    }
+        widget_template = {
+			{
+			  {
+				{
+				  {
+					id = 'icon_role',
+					widget = wibox.widget.imagebox,
+				  },
+				  margins = 2,
+				  widget = wibox.container.margin,
+				},
+				{
+				  id = 'text_role',
+				  widget = wibox.widget.textbox,
+				},
+				layout = wibox.layout.fixed.horizontal,
+				forced_width = 300
+			  },
+			  left  = 0,
+			  right = 0,
+			  widget = wibox.container.margin
+			},
+			id = 'background_role',
+			widget = wibox.container.background,
+			create_callback = function(self, c, index, objects)
+			  local tooltip = awful.tooltip({
+				objects = { self },
+				timer_function = function()
+				  return c.name
+				end,
+			  })
+			end,
+		  }
+}
 
     -- Create the wibox
     lc = function(cr,w,h) gears.shape.partially_rounded_rect(cr, w, h, true, false, false, true, 20) end
     rc = function(cr,w,h) gears.shape.partially_rounded_rect(cr, w, h, false, true, true, false, 20) end
     lrc = function(cr,w,h) gears.shape.partially_rounded_rect(cr, w, h, true, true, true, true, 20) end
     
-    s.mywibox = awful.wibar({ position = "top", screen = s, height = 50, ontop = false })
+    s.mywibox = awful.wibar({ position = "top", screen = s, ontop = false })
 
     widgetbg = "#000000"
     marginbg = "#ffffff"
@@ -511,9 +539,9 @@ awful.screen.connect_for_each_screen(function(s)
         expand = "none",
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
-            {{myWeather, top = margintop, bottom = marginbottom, left = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
+            {{myWeather, top = margintop, bottom = marginbottom, left = margincorners, right = marginright, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
             {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-	        {{myYouTube, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+	        {{myYouTube, top = margintop, bottom = marginbottom, color = marginbg, right = marginright, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{awful.widget.watch({"bash", "-c", "vmstat 1 2 | tail -1 | awk '{printf \" %d%\", 100-$15}'"}, 1), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{wibox.widget.textbox(" "), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
@@ -527,16 +555,17 @@ awful.screen.connect_for_each_screen(function(s)
         },
         { -- Middle widgets
             layout = wibox.layout.fixed.horizontal,
-            {{myLogo, top = margintop, bottom = marginbottom, left = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
-            {{s.mytaglist, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            {{s.mylayoutbox, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
-            --{{s.mytasklist, bottom = bottomborder, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{myLogo, top = margintop, bottom = marginbottom, left = margincorners, right = marginright, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
+            {{s.mytaglist, top = margintop, bottom = marginbottom, right = marginright, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{s.mytasklist, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{s.mylayoutbox, top = margintop, bottom = marginbottom, left = marginleft, right = marginright, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{myPower, top = margintop, bottom = marginbottom, right = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
 	    },
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             {{myUpdates, top = margintop, bottom = marginbottom, left = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = lc, shape_clip = true},
             {{wibox.widget.systray(), top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
+            {{myEthernet, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{myVolume, top = margintop, bottom = marginbottom, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{myMic, top = margintop, bottom = marginbottom, right = marginright, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background},
             {{mytextclock, top = margintop, bottom = marginbottom, right = margincorners, color = marginbg, widget = wibox.container.margin,}, bg = widgetbg, widget = wibox.container.background, shape = rc, shape_clip = true},
@@ -575,9 +604,19 @@ root.buttons(gears.table.join(
 globalkeys = gears.table.join(
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
-    awful.key({ modkey,           }, "Left",   awful.tag.viewprev,
+    awful.key({ modkey,           }, "Left",   awful.tag.viewprev, function()
+						if awful.tag.selected().name == "󰊠" then
+                            awful.tag.find_by_name(awful.screen.focused(), "󰮯").name = "󰊠"
+                            awful.tag.selected().name = "󰮯"
+                        end
+     end,
               {description = "view previous", group = "tag"}),
-    awful.key({ modkey,           }, "Right",  awful.tag.viewnext,
+    awful.key({ modkey,           }, "Right",  awful.tag.viewnext, function()
+						if awful.tag.selected().name == "󰊠" then
+                            awful.tag.find_by_name(awful.screen.focused(), "󰮯").name = "󰊠"
+                            awful.tag.selected().name = "󰮯"
+                        end
+     end,
               {description = "view next", group = "tag"}),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
               {description = "go back", group = "tag"}),
